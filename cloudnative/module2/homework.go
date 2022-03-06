@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	_ "github.com/golang/glog"
 )
 
 //编写一个 HTTP 服务器，大家视个人不同情况决定完成到哪个环节，但尽量把 1 都做完：
