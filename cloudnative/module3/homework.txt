@@ -5,6 +5,7 @@ flyinpenguin/httpserver               v1.0                ca984674efe0        44
 
 2.编写 Dockerfile 将练习 2.2 编写的 httpserver 容器化
 /home/mystic/golang/src/github.com/lessons/cloudnative/module2/Dockerfile
+https://github.com/joan12222/lessons/blob/master/cloudnative/module2/Dockerfile
 
 3. 将镜像推送至 docker 官方镜像仓库
 mystic@mystic-vm:~/golang/src/github.com/lessons/cloudnative/module2$ sudo docker tag lessons/httpserver:v1.0 flyinpenguin/httpserver:v1.0
