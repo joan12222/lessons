@@ -1,2 +1,76 @@
 1. thread cache, 虽然申请内存不需要加锁了，提高了性能，可是每个thread都有了自己的cache,之前说过thread是共享内存空间的，这样是不是会导致数据不一致？
 2. STD
+3. docker image拉取的不是操作系统，而是root filesystem. 那我在研发系统里构建的docker image，在生产环境里，会不会因为host OS kernel版本不一致，而没法运行呢？
+
+模块三
+云管平台： openstack,虚拟机
+    Borg: 作业调度，进程，利用了一些现在所说的容器技术，比如namespace; 在线业务(高可用，自选开销小)，离线业务(批处理，CPU开销大，可用要求低)
+
+Borg特性：
+在线离线会不
+没VM
+服务器共享
+应用高可用
+灵活的调度策略
+方便应用接入
+
+Borg基本概念：
+workload: product/non-product;白天夜晚结合
+Cell: cluster:计算资源管理，集群管理
+Job and task: 作业调度
+Naming service: dns： 服务发现
+
+安全性隔离： chroot jail ->namespace
+性能隔离： cgroup
+资源：compressible: CPU 可压榨资源
+    non-compressible: Mem/disk
+
+k8s:
+kublet->cri
+
+系统：
+命令式：微管理。如遥控器，命令，交互式
+声明式：空调遥控器，期望值
+
+声明式系统规范：
+告诉期望
+
+K8S:
+集群管理：管计算jiedian node
+作业管理: pod
+服务发现：
+
+管理节点: master,
+        API server,接收外部请求
+        etcd:把请求存储，数据库，watch模式，get请求加watch参数，建立长裂解，消息中间件
+        scheduler: 专职做调度的controller
+        controller（大脑）: 除了Pod外的抽象对象，
+节点
+        kublet:上报节点resource信息，存在etcd；唯一生命周期
+        kube-proxy:配置服务服战均衡(在master上也有)
+
+etcd: Raft协议：选主，GRPC协议返回
+    有状态， 花时间，
+    消息中间件，监控
+    分布式：性能低
+
+API server： 无状态
+    缓存，唯一和etcd通信，缓存etcd的访问，缓解
+    认证：可以带auth hook
+    rate limit:
+    Auditing: 记Log
+    AuthZ: 可挂hook
+    Aggregator: 像反向代理nginx一样，可以分发API
+        缺省的，
+        Aggregated APIServer -- AA
+AAA: Admission(准入)， mutating： 建对象，需要给对象添加属性； validating：变形后是否合法
+
+Controller manager:
+自动重试确保最终一致性, evental consitency
+code generator: 代码框架
+informer: controller interface会收到请求，informaer注册了add, delete, update handdler, 由handler讲请求放到queue, worker
+依次去取请求，进行处理
+Lister:缓存，不用每次都去找api server
+
+CNI：container runtime
+cAdvisor?
