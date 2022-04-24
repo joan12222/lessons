@@ -1,0 +1,100 @@
+apiVersion: v1
+data:
+  .dockerconfigjson: ewoJImF1dGhzIjogewoJCSJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOiB7CgkJCSJhdXRoIjogIlpteDVhVzV3Wlc1bmRXbHVPbVp2Y25CaGJtUmhPRGt3TURBPSIKCQl9Cgl9Cn0=
+kind: Secret
+metadata:
+  name: cloudnative
+  namespace: cn-demo
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo8-server
+  namespace: cn-demo
+  labels:
+    app: demo8-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo8-server
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+      labels:
+        app: demo8-server
+    spec:
+      imagePullSecrets:
+      - name: cloudnative
+      containers:
+      - env:
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: game-demo
+              key: loglevel
+        name: demo8
+        image: flyinpenguin/demo8-server:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 3
+        resources:
+          limits:
+            memory: 1Gi
+            cpu: 1
+          requests:
+            memory: 512Mi
+            cpu: 500m
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-demo
+  namespace: cn-demo
+data:
+  loglevel: debug
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo8-server
+  namespace: cn-demo
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: demo8-server
+  type: LoadBalancer 
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo8-server-80
+  namespace: cn-demo
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: demo8.test.com
+    http:
+      paths:
+        - backend:
+            service:
+              name: demo8-server
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+
