@@ -37,7 +37,7 @@ spec:
               name: game-demo
               key: loglevel
         name: demo8
-        image: flyinpenguin/demo8-server:latest
+        image: flyinpenguin/demo8-server:metrics
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
