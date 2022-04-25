@@ -86,6 +86,6 @@ func main() {
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.HandleFunc("/healthz", healthz)
 	if err := http.ListenAndServe(":8080", mux); err != nil {
-		log.Fatalf("start http server failed, error: %s\n", err.Error())
+		log.Fatalf("start http server failed, error msg: %s\n", err.Error())
 	}
 }
